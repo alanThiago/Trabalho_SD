@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="config.js" defer></script>
+</head>
+<body>
+    <h1>Movie Management</h1>
+
+    <form id="movieForm">
+        <label for="db">Database:</label>
+        <select id="db" name="db">
+            <option value="db1">DB1</option>
+            <option value="db2">DB2</option>
+        </select>
+
+        <label for="title">Movie Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="action">Action:</label>
+        <select id="action" name="action">
+            <option value="add">Add</option>
+            <option value="delete">Delete</option>
+            <option value="compare">Compare</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Movies in Database</h2>
+    <button id="getMovies">Get Movies</button>
+    <ul id="movieList"></ul>
+
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('movieForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const db = document.getElementById('db').value;
+            const title = document.getElementById('title').value;
+            const action = document.getElementById('action').value;
+
+            let url = '';
+            switch (action) {
+                case 'add':
+                    url = `${apiConfig.host}:${apiConfig.port}/add?db=${db}&title=${encodeURIComponent(title)}`;
+                    break;
+                case 'delete':
+                    url = `${apiConfig.host}:${apiConfig.port}/delete?db=${db}&title=${encodeURIComponent(title)}`;
+                    break;
+                case 'compare':
+                    url = `${apiConfig.host}:${apiConfig.port}/compare?title=${encodeURIComponent(title)}`;
+                    break;
+            }
+
+            try {
+                const response = await fetch(url);
+                const result = await response.text();
+                document.getElementById('result').innerText = result;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('getMovies').addEventListener('click', async () => {
+            const db = document.getElementById('db').value;
+            const url = `${apiConfig.host}:${apiConfig.port}/movies?db=${db}`;
+
+            try {
+                const response = await fetch(url);
+                const movies = await response.json();
+                const movieList = document.getElementById('movieList');
+                movieList.innerHTML = '';
+                movies.forEach(movie => {
+                    const li = document.createElement('li');
+                    li.textContent = movie;
+                    movieList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

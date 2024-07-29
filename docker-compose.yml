@@ -1,0 +1,69 @@
+services:
+  frontend:
+    depends_on:
+      - backend
+    build: ./frontend
+    ports:
+      - 80:3001
+    environment:
+      REACT_APP_BACKEND_HOST: backend
+      REACT_APP_BACKEND_PORT: 3000
+    networks:
+      - app-network
+    image: frontend:latest
+    container_name: frontend
+
+  backend:
+    image: backend
+    restart: always
+    depends_on:
+      - db1
+      - db2
+    build: ./backend
+    ports:
+      - 3000:3000
+    environment:
+      HOST_DB1: mongodb_1
+      USERNAME_DB1: mongoadmin
+      PASSWORD_DB1: secret
+      PORT_DB1: 27017
+
+      HOST_DB2: mongodb_2
+      USERNAME_DB2: mongoadmin
+      PASSWORD_DB2: secret
+      PORT_DB2: 27017
+    networks:
+      - app-network
+    container_name: backend
+
+  db1:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - db_1:/data/db
+    networks:
+      - app-network
+    container_name: mongodb_1
+
+  db2:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - db_2:/data/db
+    networks:
+      - app-network
+    container_name: mongodb_2
+
+volumes:
+  db_1:
+  db_2:
+
+networks:
+  app-network:
+    driver: bridge
