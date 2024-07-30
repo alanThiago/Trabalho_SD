@@ -71,7 +71,7 @@
 
         document.getElementById('getMovies').addEventListener('click', async () => {
             const db = document.getElementById('db').value;
-            const url = `${API_HOST}:${API_PORT}/get?db=${db}`;
+            const url = `${API_HOST}:${API_PORT}/movies?db=${db}`;
 
             try {
                 const response = await fetch(url);
