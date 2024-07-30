@@ -62,11 +62,8 @@ services:
 
 volumes:
   db_1:
-    name: db_1
   db_2:
-    name: db_2
 
 networks:
   app-network:
-    name: app-network
     driver: bridge
